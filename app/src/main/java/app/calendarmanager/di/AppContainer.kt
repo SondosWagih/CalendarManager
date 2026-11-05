@@ -4,7 +4,6 @@ import android.content.Context
 import app.calendarmanager.data.local.db.AppDatabase
 import app.calendarmanager.data.repository.RoomDeviceIdProvider
 import app.calendarmanager.data.repository.StudyRepository
-import app.calendarmanager.data.repository.WorkRepository
 import app.calendarmanager.data.settings.SettingsRepository
 import app.calendarmanager.data.settings.settingsDataStore
 import app.calendarmanager.domain.repository.DeviceIdProvider
@@ -13,7 +12,6 @@ import app.calendarmanager.domain.repository.DeviceIdProvider
 class AppContainer(context: Context) {
     val database: AppDatabase = AppDatabase.build(context)
     val studyRepository = StudyRepository(database)
-    val workRepository = WorkRepository(database)
     val settingsRepository = SettingsRepository(context.applicationContext.settingsDataStore)
     val deviceIdProvider: DeviceIdProvider = RoomDeviceIdProvider(database.appSettingDao())
 }

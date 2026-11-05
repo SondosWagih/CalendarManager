@@ -108,9 +108,6 @@ interface WorkGroupDao : BaseDao<WorkGroupEntity> {
     @Query("SELECT * FROM work_groups WHERE deletedAt IS NULL ORDER BY name")
     fun observeActive(): Flow<List<WorkGroupEntity>>
 
-    @Query("SELECT * FROM work_groups WHERE id = :id")
-    suspend fun get(id: Long): WorkGroupEntity?
-
     @Query("UPDATE work_groups SET deletedAt = :now, updatedAt = :now WHERE id = :id")
     suspend fun softDelete(id: Long, now: Long)
 }
@@ -122,9 +119,6 @@ interface WorkEventDao : BaseDao<WorkEventEntity> {
 
     @Query("SELECT * FROM work_events WHERE id = :id")
     suspend fun get(id: Long): WorkEventEntity?
-
-    @Query("UPDATE work_events SET deletedAt = :now, updatedAt = :now WHERE groupId = :groupId AND deletedAt IS NULL")
-    suspend fun softDeleteByGroup(groupId: Long, now: Long)
 
     @Query("UPDATE work_events SET deletedAt = :now, updatedAt = :now WHERE id = :id")
     suspend fun softDelete(id: Long, now: Long)

@@ -44,8 +44,6 @@ import java.util.Locale
     ValidationError.END_BEFORE_START -> R.string.error_end_before_start
     ValidationError.DURATION_INVALID -> R.string.error_duration_invalid
     ValidationError.NOT_FOUND -> R.string.error_not_found
-    ValidationError.GROUP_REQUIRED -> R.string.error_group_required
-    ValidationError.DATE_REQUIRED -> R.string.error_date_required
 }
 
 fun formatMinute(minute: Int): String = String.format(Locale.getDefault(), "%02d:%02d", minute / 60, minute % 60)

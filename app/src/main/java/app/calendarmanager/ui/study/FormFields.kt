@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
@@ -25,9 +26,21 @@ import app.calendarmanager.domain.validation.ValidationError
 
 private const val MILLIS_PER_DAY = 86_400_000L
 
+/**
+ * 24 course colors, ordered around the color wheel (reds -> oranges -> yellows -> greens -> teals -> blues
+ * -> purples -> pinks -> neutrals) so the grid reads as a gradient. The first-generation 8 colors are kept
+ * unchanged, so courses saved earlier still show their selection ring. Anything outside this list is a
+ * custom color (see ColorRow).
+ */
 val CoursePalette: List<Int> = listOf(
-    0xFF3F6FD8, 0xFF2E9E6B, 0xFFE08A1E, 0xFFD0453D, 0xFF8A55C7, 0xFF00897B, 0xFFC2185B, 0xFF546E7A,
+    0xFFC62828, 0xFFD0453D, 0xFFFF7043, 0xFFF4511E, 0xFFE08A1E, 0xFFF9A825,
+    0xFFAFB42B, 0xFF7CB342, 0xFF2E9E6B, 0xFF2E7D32, 0xFF00897B, 0xFF00695C,
+    0xFF00ACC1, 0xFF039BE5, 0xFF3F6FD8, 0xFF3949AB, 0xFF5E35B1, 0xFF8A55C7,
+    0xFFAB47BC, 0xFF6A1B9A, 0xFFC2185B, 0xFFEC407A, 0xFF8D6E63, 0xFF546E7A,
 ).map { it.toInt() }
+
+/** First palette color not used by another course; falls back to the first color when all are taken. */
+fun nextFreeColor(used: Set<Int>): Int = CoursePalette.firstOrNull { it !in used } ?: CoursePalette.first()
 
 @Composable
 fun FormDialog(
@@ -99,20 +112,43 @@ fun CourseChoice(courses: List<CourseEntity>, selected: Long?, allowNone: Boolea
 }
 
 @Composable
+private fun ColorDot(color: Int, selected: Boolean, onClick: () -> Unit) {
+    Box(
+        Modifier.size(44.dp)
+            .clickable(role = Role.RadioButton, onClick = onClick)
+            .padding(5.dp)
+    ) {
+        Box(
+            Modifier.fillMaxSize().clip(CircleShape).background(Color(color))
+                .then(if (selected) Modifier.border(3.dp, MaterialTheme.colorScheme.onSurface, CircleShape) else Modifier)
+        )
+    }
+}
+
+/** Palette grid (all colors visible, no sideways scrolling) + an optional custom hue/lightness picker. */
+@Composable
 fun ColorRow(label: String, selected: Int, onSelect: (Int) -> Unit) {
+    var showCustom by remember { mutableStateOf(selected !in CoursePalette) }
     Column {
         Text(label, style = MaterialTheme.typography.labelLarge)
-        Row(Modifier.horizontalScroll(rememberScrollState())) {
-            CoursePalette.forEach { c ->
-                Box(
-                    Modifier.size(48.dp)
-                        .clickable(role = Role.RadioButton, onClick = { onSelect(c) })
-                        .padding(6.dp)
-                ) {
-                    Box(
-                        Modifier.fillMaxSize().clip(CircleShape).background(Color(c))
-                            .then(if (c == selected) Modifier.border(3.dp, MaterialTheme.colorScheme.onSurface, CircleShape) else Modifier)
-                    )
+        CoursePalette.chunked(6).forEach { rowColors ->
+            Row {
+                rowColors.forEach { c -> ColorDot(c, c == selected) { onSelect(c) } }
+            }
+        }
+        TextButton(onClick = { showCustom = !showCustom }) { Text(stringResource(R.string.color_custom)) }
+        if (showCustom) {
+            val initialHue = remember {
+                FloatArray(3).also { android.graphics.Color.colorToHSV(selected, it) }[0]
+            }
+            var hue by remember { mutableFloatStateOf(initialHue) }
+            var light by remember { mutableFloatStateOf(0.45f) }
+            fun pick() = onSelect(Color.hsl(hue, 0.65f, light).toArgb())
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Box(Modifier.size(36.dp).clip(CircleShape).background(Color(selected)))
+                Column(Modifier.weight(1f)) {
+                    Slider(value = hue, onValueChange = { hue = it; pick() }, valueRange = 0f..360f)
+                    Slider(value = light, onValueChange = { light = it; pick() }, valueRange = 0.25f..0.75f)
                 }
             }
         }

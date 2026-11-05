@@ -45,6 +45,7 @@ fun StudyScreen(viewModel: StudyViewModel, modifier: Modifier = Modifier) {
     var tabIndex by rememberSaveable { mutableStateOf(0) }
     var dialog by remember { mutableStateOf<StudyDialog?>(null) }
     var pendingDelete by remember { mutableStateOf<DeleteRequest?>(null) }
+    var selectedEvent by remember { mutableStateOf<StudyEventEntity?>(null) }
 
     val tab = StudyTab.entries[tabIndex]
     val courseById = remember(ui.courses) { ui.courses.associateBy { it.id } }
@@ -65,6 +66,14 @@ fun StudyScreen(viewModel: StudyViewModel, modifier: Modifier = Modifier) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(stringResource(R.string.add_course_first), style = MaterialTheme.typography.bodyLarge)
                 }
+            } else if (tab == StudyTab.SCHEDULE) {
+                WeeklySchedule(
+                    events = ui.events,
+                    courseById = courseById,
+                    firstDay = WeekFields.of(Locale.getDefault()).firstDayOfWeek.value,
+                    onEventClick = { selectedEvent = it },
+                    modifier = Modifier.fillMaxSize(),
+                )
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -72,33 +81,7 @@ fun StudyScreen(viewModel: StudyViewModel, modifier: Modifier = Modifier) {
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     when (tab) {
-                        StudyTab.SCHEDULE -> {
-                            val firstDay = WeekFields.of(Locale.getDefault()).firstDayOfWeek.value
-                            val order = (0..6).map { (firstDay - 1 + it) % 7 + 1 }
-                            if (ui.events.isEmpty()) item { EmptyText() }
-                            order.forEach { d ->
-                                val dayEvents = ui.events.filter { it.dayOfWeek == d }
-                                if (dayEvents.isNotEmpty()) {
-                                    item(key = "day_$d") {
-                                        Text(dayName(d), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
-                                    }
-                                    items(dayEvents, key = { "event_${it.id}" }) { e ->
-                                        ItemCard(
-                                            tint = tintOf(e.courseId),
-                                            title = nameOf(e.courseId),
-                                            lines = listOfNotNull(
-                                                "${formatMinute(e.startMinute)}–${formatMinute(e.endMinute)}",
-                                                "${stringResource(e.type.label())} • ${stringResource(e.attendance.label())}",
-                                                e.location,
-                                                e.onlineLink,
-                                            ),
-                                            onClick = { dialog = StudyDialog.Event(e) },
-                                            onDelete = { pendingDelete = DeleteRequest(R.string.delete_item_msg) { viewModel.deleteEvent(e.id) } },
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                        StudyTab.SCHEDULE -> Unit // drawn by WeeklySchedule above
                         StudyTab.COURSES -> {
                             if (ui.courses.isEmpty()) item { EmptyText() }
                             items(ui.courses, key = { "course_${it.id}" }) { c ->
@@ -183,11 +166,45 @@ fun StudyScreen(viewModel: StudyViewModel, modifier: Modifier = Modifier) {
 
     when (val d = dialog) {
         null -> Unit
-        is StudyDialog.Course -> CourseForm(d.item, { dialog = null }, viewModel::saveCourse)
+        is StudyDialog.Course -> CourseForm(
+            d.item,
+            usedColors = ui.courses.filter { it.id != d.item?.id }.map { it.colorArgb }.toSet(),
+            onDismiss = { dialog = null },
+            onSave = viewModel::saveCourse,
+        )
         is StudyDialog.Event -> EventForm(d.item, ui.courses, { dialog = null }, viewModel::saveEvent)
         is StudyDialog.Exam -> ExamForm(d.item, ui.courses, { dialog = null }, viewModel::saveExam)
         is StudyDialog.Assignment -> AssignmentForm(d.item, ui.courses, { dialog = null }, viewModel::saveAssignment)
         is StudyDialog.Session -> SessionForm(d.item, ui.courses, { dialog = null }, viewModel::saveSession)
+    }
+
+    selectedEvent?.let { e ->
+        AlertDialog(
+            onDismissRequest = { selectedEvent = null },
+            title = { Text(nameOf(e.courseId)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("${dayName(e.dayOfWeek)} • ${formatMinute(e.startMinute)}–${formatMinute(e.endMinute)}")
+                    Text("${stringResource(e.type.label())} • ${stringResource(e.attendance.label())}")
+                    e.location?.takeIf { it.isNotBlank() }?.let { Text(it) }
+                    e.onlineLink?.takeIf { it.isNotBlank() }?.let { Text(it) }
+                    e.notes?.takeIf { it.isNotBlank() }?.let { Text(it, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                }
+            },
+            confirmButton = {
+                Row {
+                    TextButton(onClick = {
+                        pendingDelete = DeleteRequest(R.string.delete_item_msg) { viewModel.deleteEvent(e.id) }
+                        selectedEvent = null
+                    }) { Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error) }
+                    TextButton(onClick = {
+                        dialog = StudyDialog.Event(e)
+                        selectedEvent = null
+                    }) { Text(stringResource(R.string.edit)) }
+                }
+            },
+            dismissButton = { TextButton(onClick = { selectedEvent = null }) { Text(stringResource(R.string.close)) } },
+        )
     }
 
     pendingDelete?.let { req ->
@@ -205,12 +222,12 @@ fun StudyScreen(viewModel: StudyViewModel, modifier: Modifier = Modifier) {
 private fun LocalExamColor(): Color = app.calendarmanager.ui.theme.LocalCategoryColors.current.exam
 
 @Composable
-internal fun EmptyText() {
+private fun EmptyText() {
     Text(stringResource(R.string.empty_state), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(vertical = 24.dp))
 }
 
 @Composable
-internal fun ItemCard(
+private fun ItemCard(
     tint: Color,
     title: String,
     lines: List<String>,

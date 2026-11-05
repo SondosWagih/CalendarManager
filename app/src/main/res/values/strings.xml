@@ -76,22 +76,7 @@
     <string name="error_end_before_start">End time must be after start time</string>
     <string name="error_duration_invalid">Duration must be between 1 and 1440 minutes</string>
     <string name="error_not_found">This item no longer exists</string>
-
-    <string name="add_group">Add group</string>
-    <string name="edit_group">Edit group</string>
-    <string name="delete_group">Delete group</string>
-    <string name="add_unexpected">Add unexpected event</string>
-    <string name="add_group_first">Create a work group first</string>
-    <string name="work_weekly_schedule">Weekly schedule</string>
-    <string name="work_other_events">One-time and unexpected events</string>
-    <string name="form_group">Work group</string>
-    <string name="form_work_event">Work event</string>
-    <string name="field_group">Group</string>
-    <string name="field_kind">Event type</string>
-    <string name="work_kind_weekly">Weekly</string>
-    <string name="work_kind_one_time">One-time</string>
-    <string name="work_kind_unexpected">Unexpected</string>
-    <string name="delete_group_msg">This also deletes the group\'s weekly schedule and events.</string>
-    <string name="error_group_required">Choose a group</string>
-    <string name="error_date_required">Choose a date</string>
+    <string name="edit">Edit</string>
+    <string name="close">Close</string>
+    <string name="color_custom">Custom color</string>
 </resources>
