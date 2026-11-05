@@ -18,6 +18,9 @@ interface CourseDao : BaseDao<CourseEntity> {
     @Query("SELECT * FROM courses WHERE deletedAt IS NULL ORDER BY name")
     fun observeActive(): Flow<List<CourseEntity>>
 
+    @Query("SELECT * FROM courses WHERE id = :id")
+    suspend fun get(id: Long): CourseEntity?
+
     @Query("UPDATE courses SET deletedAt = :now, updatedAt = :now WHERE id = :id")
     suspend fun softDelete(id: Long, now: Long)
 }
@@ -30,6 +33,9 @@ interface StudyEventDao : BaseDao<StudyEventEntity> {
     @Query("SELECT * FROM study_events WHERE id = :id")
     suspend fun get(id: Long): StudyEventEntity?
 
+    @Query("UPDATE study_events SET deletedAt = :now, updatedAt = :now WHERE courseId = :courseId AND deletedAt IS NULL")
+    suspend fun softDeleteByCourse(courseId: Long, now: Long)
+
     @Query("UPDATE study_events SET deletedAt = :now, updatedAt = :now WHERE id = :id")
     suspend fun softDelete(id: Long, now: Long)
 }
@@ -38,6 +44,18 @@ interface StudyEventDao : BaseDao<StudyEventEntity> {
 interface StudySessionDao : BaseDao<StudySessionEntity> {
     @Query("SELECT * FROM study_sessions WHERE deletedAt IS NULL AND dateEpochDay BETWEEN :from AND :to ORDER BY dateEpochDay, startMinute")
     fun observeRange(from: Long, to: Long): Flow<List<StudySessionEntity>>
+
+    @Query("SELECT * FROM study_sessions WHERE deletedAt IS NULL ORDER BY dateEpochDay, startMinute")
+    fun observeAll(): Flow<List<StudySessionEntity>>
+
+    @Query("SELECT * FROM study_sessions WHERE id = :id")
+    suspend fun get(id: Long): StudySessionEntity?
+
+    @Query("UPDATE study_sessions SET completed = :done, updatedAt = :now WHERE id = :id")
+    suspend fun setCompleted(id: Long, done: Boolean, now: Long)
+
+    @Query("UPDATE study_sessions SET deletedAt = :now, updatedAt = :now WHERE courseId = :courseId AND deletedAt IS NULL")
+    suspend fun softDeleteByCourse(courseId: Long, now: Long)
 
     @Query("UPDATE study_sessions SET deletedAt = :now, updatedAt = :now WHERE id = :id")
     suspend fun softDelete(id: Long, now: Long)
@@ -51,6 +69,12 @@ interface ExamDao : BaseDao<ExamEntity> {
     @Query("SELECT * FROM exams WHERE id = :id")
     suspend fun get(id: Long): ExamEntity?
 
+    @Query("SELECT * FROM exams WHERE deletedAt IS NULL ORDER BY dateEpochDay, startMinute")
+    fun observeAll(): Flow<List<ExamEntity>>
+
+    @Query("UPDATE exams SET deletedAt = :now, updatedAt = :now WHERE courseId = :courseId AND deletedAt IS NULL")
+    suspend fun softDeleteByCourse(courseId: Long, now: Long)
+
     @Query("UPDATE exams SET deletedAt = :now, updatedAt = :now WHERE id = :id")
     suspend fun softDelete(id: Long, now: Long)
 }
@@ -62,6 +86,18 @@ interface AssignmentDao : BaseDao<AssignmentEntity> {
 
     @Query("SELECT * FROM assignments WHERE deletedAt IS NULL AND completed = 0 ORDER BY dueEpochDay")
     fun observePending(): Flow<List<AssignmentEntity>>
+
+    @Query("SELECT * FROM assignments WHERE deletedAt IS NULL ORDER BY completed, dueEpochDay, dueMinute")
+    fun observeAll(): Flow<List<AssignmentEntity>>
+
+    @Query("SELECT * FROM assignments WHERE id = :id")
+    suspend fun get(id: Long): AssignmentEntity?
+
+    @Query("UPDATE assignments SET completed = :done, completedAt = :completedAt, updatedAt = :now WHERE id = :id")
+    suspend fun setCompleted(id: Long, done: Boolean, completedAt: Long?, now: Long)
+
+    @Query("UPDATE assignments SET deletedAt = :now, updatedAt = :now WHERE courseId = :courseId AND deletedAt IS NULL")
+    suspend fun softDeleteByCourse(courseId: Long, now: Long)
 
     @Query("UPDATE assignments SET deletedAt = :now, updatedAt = :now WHERE id = :id")
     suspend fun softDelete(id: Long, now: Long)

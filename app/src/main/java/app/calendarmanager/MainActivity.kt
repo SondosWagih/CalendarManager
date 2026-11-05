@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import app.calendarmanager.domain.model.ThemeMode
 import app.calendarmanager.ui.AppRoot
 import app.calendarmanager.ui.settings.SettingsViewModel
+import app.calendarmanager.ui.study.StudyViewModel
 import app.calendarmanager.ui.theme.AppTheme
 
 class MainActivity : AppCompatActivity() {
@@ -20,13 +21,14 @@ class MainActivity : AppCompatActivity() {
         val container = (application as CalendarApp).container
         setContent {
             val vm: SettingsViewModel = viewModel(factory = SettingsViewModel.factory(container.settingsRepository))
+            val studyVm: StudyViewModel = viewModel(factory = StudyViewModel.factory(container.studyRepository))
             val mode by vm.themeMode.collectAsStateWithLifecycle()
             val dark = when (mode) {
                 ThemeMode.SYSTEM -> isSystemInDarkTheme()
                 ThemeMode.LIGHT -> false
                 ThemeMode.DARK -> true
             }
-            AppTheme(dark) { AppRoot(vm) }
+            AppTheme(dark) { AppRoot(vm, studyVm) }
         }
     }
 }
