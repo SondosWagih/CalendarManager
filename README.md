@@ -1,7 +1,5 @@
-# Calendar Manager - Phase 1 (project setup, architecture, schema)
+# Calendar Manager
+- Phase 1: project setup, architecture, Room schema (done, tests green).
+- Phase 2: navigation (5 destinations), Material 3 light/dark, Arabic RTL / English LTR switch, DataStore settings.
 
-Open the folder in Android Studio (Koala+). Studio generates the Gradle wrapper on import.
-Run the DB tests: `./gradlew connectedDebugAndroidTest` (needs an emulator/device).
-
-Layers: `data/local` (Room) -> `data/repository` -> `domain` (interfaces/models) -> `ui` (Compose, Phase 2+).
-Offline by design: no INTERNET permission, `allowBackup=false`.
+Open in Android Studio, or push to GitHub: the workflow builds the APK and runs the instrumented tests.

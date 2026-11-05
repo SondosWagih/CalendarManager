@@ -1,27 +1,32 @@
 package app.calendarmanager
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import app.calendarmanager.domain.model.ThemeMode
+import app.calendarmanager.ui.AppRoot
+import app.calendarmanager.ui.settings.SettingsViewModel
 import app.calendarmanager.ui.theme.AppTheme
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         val container = (application as CalendarApp).container
         setContent {
-            AppTheme {
-                Surface {
-                    // Phase 1 placeholder: proves DB + device id work. Real navigation arrives in Phase 2.
-                    val id by produceState("…") { value = container.deviceIdProvider.getOrCreate() }
-                    Text("Device: $id")
-                }
+            val vm: SettingsViewModel = viewModel(factory = SettingsViewModel.factory(container.settingsRepository))
+            val mode by vm.themeMode.collectAsStateWithLifecycle()
+            val dark = when (mode) {
+                ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
             }
+            AppTheme(dark) { AppRoot(vm) }
         }
     }
 }
