@@ -1,0 +1,1 @@
+-keep class app.calendarmanager.data.local.entity.** { *; }
