@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class SettingsRepositoryTest {
     @Test fun themeDefaultsToSystemAndPersistsChanges() = runBlocking {
-        val file = File.createTempFile("ds", ".preferences_pb").also { it.delete() }
+        val file = File.createTempFile("settings_test", ".preferences_pb").also { it.delete() }
         val repo = SettingsRepository(PreferenceDataStoreFactory.create(scope = CoroutineScope(Dispatchers.IO)) { file })
         assertEquals(ThemeMode.SYSTEM, repo.themeMode.first())
         repo.setThemeMode(ThemeMode.DARK)
