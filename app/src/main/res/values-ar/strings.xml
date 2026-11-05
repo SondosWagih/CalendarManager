@@ -76,4 +76,22 @@
     <string name="error_end_before_start">يجب أن يكون وقت النهاية بعد وقت البداية</string>
     <string name="error_duration_invalid">يجب أن تكون المدة بين 1 و1440 دقيقة</string>
     <string name="error_not_found">هذا العنصر لم يعد موجوداً</string>
+
+    <string name="add_group">إضافة مجموعة</string>
+    <string name="edit_group">تعديل المجموعة</string>
+    <string name="delete_group">حذف المجموعة</string>
+    <string name="add_unexpected">إضافة حدث طارئ</string>
+    <string name="add_group_first">أنشئ مجموعة عمل أولاً</string>
+    <string name="work_weekly_schedule">الجدول الأسبوعي</string>
+    <string name="work_other_events">أحداث لمرة واحدة وأحداث طارئة</string>
+    <string name="form_group">مجموعة عمل</string>
+    <string name="form_work_event">حدث عمل</string>
+    <string name="field_group">المجموعة</string>
+    <string name="field_kind">نوع الحدث</string>
+    <string name="work_kind_weekly">أسبوعي</string>
+    <string name="work_kind_one_time">مرة واحدة</string>
+    <string name="work_kind_unexpected">طارئ</string>
+    <string name="delete_group_msg">سيؤدي هذا أيضاً إلى حذف الجدول الأسبوعي وأحداث المجموعة.</string>
+    <string name="error_group_required">اختر مجموعة</string>
+    <string name="error_date_required">اختر تاريخاً</string>
 </resources>

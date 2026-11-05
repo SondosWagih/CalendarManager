@@ -22,11 +22,13 @@ import app.calendarmanager.ui.settings.SettingsScreen
 import app.calendarmanager.ui.settings.SettingsViewModel
 import app.calendarmanager.ui.study.StudyScreen
 import app.calendarmanager.ui.study.StudyViewModel
+import app.calendarmanager.ui.work.WorkScreen
+import app.calendarmanager.ui.work.WorkViewModel
 import app.calendarmanager.ui.theme.LocalCategoryColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppRoot(settingsViewModel: SettingsViewModel, studyViewModel: StudyViewModel) {
+fun AppRoot(settingsViewModel: SettingsViewModel, studyViewModel: StudyViewModel, workViewModel: WorkViewModel) {
     val nav = rememberNavController()
     val entry by nav.currentBackStackEntryAsState()
     val route = entry?.destination?.route
@@ -75,7 +77,7 @@ fun AppRoot(settingsViewModel: SettingsViewModel, studyViewModel: StudyViewModel
                 SectionScreen(TopLevel.DASHBOARD.testTag, TopLevel.DASHBOARD.icon, MaterialTheme.colorScheme.primary)
             }
             composable(TopLevel.STUDY.route) { StudyScreen(studyViewModel) }
-            composable(TopLevel.WORK.route) { SectionScreen(TopLevel.WORK.testTag, TopLevel.WORK.icon, colors.work) }
+            composable(TopLevel.WORK.route) { WorkScreen(workViewModel) }
             composable(TopLevel.TASKS.route) { SectionScreen(TopLevel.TASKS.testTag, TopLevel.TASKS.icon, colors.task) }
             composable(TopLevel.CALENDAR.route) {
                 SectionScreen(TopLevel.CALENDAR.testTag, TopLevel.CALENDAR.icon, MaterialTheme.colorScheme.primary)

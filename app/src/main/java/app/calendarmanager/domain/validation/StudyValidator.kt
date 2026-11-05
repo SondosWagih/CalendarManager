@@ -5,6 +5,7 @@ import app.calendarmanager.domain.model.*
 enum class ValidationError {
     NAME_REQUIRED, TITLE_REQUIRED, COURSE_REQUIRED, DAY_INVALID,
     TIME_INVALID, END_BEFORE_START, DURATION_INVALID, NOT_FOUND,
+    GROUP_REQUIRED, DATE_REQUIRED,
 }
 
 /** Pure functions: return null when valid, otherwise the first problem found. */

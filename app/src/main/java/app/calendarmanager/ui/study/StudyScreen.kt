@@ -205,12 +205,12 @@ fun StudyScreen(viewModel: StudyViewModel, modifier: Modifier = Modifier) {
 private fun LocalExamColor(): Color = app.calendarmanager.ui.theme.LocalCategoryColors.current.exam
 
 @Composable
-private fun EmptyText() {
+internal fun EmptyText() {
     Text(stringResource(R.string.empty_state), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(vertical = 24.dp))
 }
 
 @Composable
-private fun ItemCard(
+internal fun ItemCard(
     tint: Color,
     title: String,
     lines: List<String>,
