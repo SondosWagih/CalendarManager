@@ -76,7 +76,4 @@
     <string name="error_end_before_start">يجب أن يكون وقت النهاية بعد وقت البداية</string>
     <string name="error_duration_invalid">يجب أن تكون المدة بين 1 و1440 دقيقة</string>
     <string name="error_not_found">هذا العنصر لم يعد موجوداً</string>
-    <string name="edit">تعديل</string>
-    <string name="close">إغلاق</string>
-    <string name="color_custom">لون مخصص</string>
 </resources>

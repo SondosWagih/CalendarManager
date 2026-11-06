@@ -76,7 +76,4 @@
     <string name="error_end_before_start">End time must be after start time</string>
     <string name="error_duration_invalid">Duration must be between 1 and 1440 minutes</string>
     <string name="error_not_found">This item no longer exists</string>
-    <string name="edit">Edit</string>
-    <string name="close">Close</string>
-    <string name="color_custom">Custom color</string>
 </resources>

@@ -2,6 +2,5 @@
 - Phase 1: project setup, architecture, Room schema (done, tests green).
 - Phase 2: navigation (5 destinations), Material 3 light/dark, Arabic RTL / English LTR switch, DataStore settings.
 - Phase 3: Study (courses, weekly lectures/sections with physical/online, exams, assignments, planner) with validation, soft delete and tests.
-  - Phase 3.1: 24-color course palette (+ custom color, auto-picks an unused color); Schedule tab is now a weekly timetable (time grid, today column, overlap handling, tap for details/edit/delete).
 
 Open in Android Studio, or push to GitHub: the workflow builds the APK and runs the instrumented tests.

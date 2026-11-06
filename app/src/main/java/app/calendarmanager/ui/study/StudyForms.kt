@@ -11,11 +11,11 @@ import java.time.LocalDate
 typealias SaveHandler<D> = (D, (ValidationError?) -> Unit) -> Unit
 
 @Composable
-fun CourseForm(initial: CourseEntity?, usedColors: Set<Int>, onDismiss: () -> Unit, onSave: SaveHandler<CourseDraft>) {
+fun CourseForm(initial: CourseEntity?, onDismiss: () -> Unit, onSave: SaveHandler<CourseDraft>) {
     var name by remember { mutableStateOf(initial?.name ?: "") }
     var code by remember { mutableStateOf(initial?.code ?: "") }
     var instructor by remember { mutableStateOf(initial?.instructor ?: "") }
-    var color by remember { mutableIntStateOf(initial?.colorArgb ?: nextFreeColor(usedColors)) }
+    var color by remember { mutableIntStateOf(initial?.colorArgb ?: CoursePalette.first()) }
     var error by remember { mutableStateOf<ValidationError?>(null) }
     FormDialog(stringResource(R.string.form_course), error, onDismiss, onSave = {
         onSave(CourseDraft(initial?.id, name, code, instructor, color)) { e -> if (e == null) onDismiss() else error = e }
